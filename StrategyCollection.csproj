@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BD047E4C-DAD5-4A33-9C38-34ED9D0B5055}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StrategyCollection</RootNamespace>
+    <AssemblyName>StrategyCollection</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accord.Statistics">
+      <HintPath>..\Accord.NET Framework-2.1.6\Release\Accord.Statistics.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADRatio.cs" />
+    <Compile Include="ADRATIOVivek.cs" />
+    <Compile Include="ADRatioVivekDynamicTime.cs" />
+    <Compile Include="ADRatioVivekStaticTime.cs" />
+    <Compile Include="ADRatio_disp_dyn.cs" />
+    <Compile Include="ADRatio_disp_dyn1.cs" />
+    <Compile Include="ADRatio_dist.cs" />
+    <Compile Include="ADRatio_dyn.cs" />
+    <Compile Include="ADRATIO_IBS.cs" />
+    <Compile Include="ADRatio_new.cs" />
+    <Compile Include="ADRatio_new1.cs" />
+    <Compile Include="ADRatio_new2.cs" />
+    <Compile Include="ADRatio_new3.cs" />
+    <Compile Include="ADRatio_VariableTime.cs" />
+    <Compile Include="AD_diff_Avg.cs" />
+    <Compile Include="AD_DYN.cs" />
+    <Compile Include="ad_low_contra.cs" />
+    <Compile Include="AD_range.cs" />
+    <Compile Include="AD_range_dyn.cs" />
+    <Compile Include="AD_range_dyn1.cs" />
+    <Compile Include="AD_range_dyn2.cs" />
+    <Compile Include="AD_ratio.cs" />
+    <Compile Include="bollinger_band.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="close_contra.cs" />
+    <Compile Include="Contra_Spread.cs" />
+    <Compile Include="contra_spread1.cs" />
+    <Compile Include="contra_spread_corr.cs" />
+    <Compile Include="contra_spread_dyn.cs" />
+    <Compile Include="contra_trend.cs" />
+    <Compile Include="epchan_reversal.cs" />
+    <Compile Include="epchan_sign.cs" />
+    <Compile Include="epchan_trend.cs" />
+    <Compile Include="Gap_contra.cs" />
+    <Compile Include="half_hour.cs" />
+    <Compile Include="IndiaPriceAction1.cs" />
+    <Compile Include="low_contra.cs" />
+    <Compile Include="low_contra_ad.cs" />
+    <Compile Include="MACD..cs" />
+    <Compile Include="MovePerUnitTime.cs" />
+    <Compile Include="NSE_AD_range_6tick_exit.cs" />
+    <Compile Include="NSE_AD_range_final.cs" />
+    <Compile Include="open_contra.cs" />
+    <Compile Include="RSI.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RSI2.cs" />
+    <Compile Include="RSI_AD.cs" />
+    <Compile Include="RSI_AD_lag.cs" />
+    <Compile Include="RSI_day.cs" />
+    <Compile Include="SP_AD_contra.cs" />
+    <Compile Include="stockvssector.cs" />
+    <Compile Include="StockVsSector1.cs" />
+    <Compile Include="stockvssector2.cs" />
+    <Compile Include="StockVsSector3.cs" />
+    <Compile Include="stockvssector_decay_entry.cs" />
+    <Compile Include="stockvssector_LS.cs" />
+    <Compile Include="stvssec_DE.cs" />
+    <Compile Include="stvssec_gap.cs" />
+    <Compile Include="test1.cs" />
+    <Compile Include="test10.cs" />
+    <Compile Include="test2.cs" />
+    <Compile Include="test3_correct.cs" />
+    <Compile Include="test3_delay.cs" />
+    <Compile Include="test3_new.cs" />
+    <Compile Include="test6.cs" />
+    <Compile Include="test6_correct.cs" />
+    <Compile Include="test6_delay.cs" />
+    <Compile Include="test6_delaycs.cs" />
+    <Compile Include="test7.cs" />
+    <Compile Include="test8.cs" />
+    <Compile Include="TMAwithStdevBand.cs" />
+    <Compile Include="TMAwithStdevBand_Exit.cs" />
+    <Compile Include="trend_reversal.cs" />
+    <Compile Include="trend_spread.cs" />
+    <Compile Include="trend_spread1.cs" />
+    <Compile Include="trend_spread_LS.cs" />
+    <Compile Include="trend_spread_LS1.cs" />
+    <Compile Include="VivekNSEADTradePointExit.cs" />
+    <Compile Include="Vivek_NSEAD.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonLib\CommonLib\CommonLib.csproj">
+      <Project>{FC8E9624-712B-4255-BF68-5E24FAD2CFE4}</Project>
+      <Name>CommonLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
