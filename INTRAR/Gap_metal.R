@@ -1,29 +1,26 @@
-setwd("D:/Project/Excercise10_Gap_Strategy/NewExcercises_ALL/Metal_Prices")
+setwd("M:/HFT Quant/Shared folder/Vivek/Codeframework_Rcpp")
 library(xts)
 library(zoo)
 library(TTR)
 library(data.table)
 library("Rcpp")
 library("data.table")
-source("../InputFiles_ALL/R_Func_1.R")
+source("R_Func_1.R")
 sourceCpp("TWAP_metal.cpp")
 
-case = c("NewData_PriceOnly_to_230930metalprices_retu")
+case = c("test")
 #tst<- match(colnames(dta_stk_close),colnames(Volume))
 #sel_Volume <- data.frame(Volume[,na.omit(tst)])
 #tst1 <- match(colnames(sel_Volume),colnames(dta_stk_close))
 #sel_dta_stk_close <- data.frame(dta_stk_close[,na.omit(tst1)])
 
-dta_stk_close <-data.frame(read.csv("../InputFiles_ALL/Close_data_final_metals.csv"),check.names=FALSE)
+dta_stk_close <-data.frame(readRDS("Sel_index.RDS"))
 dta_stk_close$Date<-as.POSIXct(paste(dta_stk_close$Date),"%Y-%m-%d %H:%M:%S",tz="GMT")
 
 #dta_stk_close <- dta_stk_close[,c("Date","HINDALCO","HINDZINC","JSWSTEEL","JINDALSTEL","TATASTEEL"
 #                                  ,"VEDL")]
 dta_stk_high <- copy(dta_stk_close)
 dta_stk_low <- copy(dta_stk_close)
-
-Metals_Data <-data.frame(read.csv("Metals_Play_comm_data.csv"),check.names=FALSE)
-Metals_Data$Date<-as.POSIXct(Metals_Data$Date,"%m/%d/%Y",tz="GMT")
 
 common_date = merge(dta_stk_close[1],dta_stk_high[1],by=c("Date"))
 common_date = merge(common_date,dta_stk_low[1],by=c("Date"))
@@ -32,22 +29,13 @@ dta_stk_close = merge(dta_stk_close,common_date,by=c("Date"))
 dta_stk_high = merge(dta_stk_high,common_date,by=c("Date"))
 dta_stk_low = merge(dta_stk_low,common_date,by=c("Date"))
 
-common_date_only_date <- data.frame(unique(strftime(common_date$Date, format="%Y-%m-%d")))
-colnames(common_date_only_date) <- c("Date")
-common_date_only_date$Date<-as.POSIXct(common_date_only_date$Date,"%Y-%m-%d",tz="GMT")
-
-Metals_Data <- merge(common_date_only_date,Metals_Data,by=c("Date"),all.x=T)
-Metals_Data <- na.locf(Metals_Data)
-Metals_Data <- na.locf(Metals_Data,fromLast = TRUE)
-
-common_date$Date1 <- strftime(common_date$Date, format="%Y-%m-%d")
-common_date = merge(common_date,Metals_Data,by.x=c("Date1"),by.y=c("Date"))
-
-Metals_Data_final <- copy(common_date)
-Metals_Data_final$Date1 <- NULL
-
 ############################################
 results_op<-NULL
+time_of_day = c(final.time1)
+lonn <- c(1)
+shtt <- c(1)
+lookback_mean_sd_price <- c(10)
+factor_mean_sd_price <- c(1.5)
 dt_chng<-as.matrix(endpoints(dta_stk_close$Date,on="days"))      # This will give the last rows of every day
 dt_time=matrix(strftime(dta_stk_close$Date,"%H:%M:%OS",tz="GMT")) 
 
@@ -69,22 +57,17 @@ twapp<-10  # this is the ticks for twap
 lookbackmeansdprice = c(10)
 factormeansdprice = c(1.5)
 
-final.datetime=strptime(as.character("1/2/2006 14:25:00"),"%m/%d/%Y %H:%M:%OS")
+final.datetime=strptime(as.character("1/2/2006 09:30:00"),"%m/%d/%Y %H:%M:%OS")
 final.time=strftime(final.datetime,"%H:%M:%OS")
 
-final.datetime1=strptime(as.character("1/2/2006 13:25:00"),"%m/%d/%Y %H:%M:%OS")
+final.datetime1=strptime(as.character("1/2/2006 14:30:00"),"%m/%d/%Y %H:%M:%OS")
 final.time1=strftime(final.datetime1,"%H:%M:%OS")
-timeofday = c(final.time,final.time1)
+timeofday = c(final.time)
 
 lon = c(1)
 sht = c(1)
 Final_Results <- NULL
 
-time_of_day = c(final.time1)
-lonn <- c(1)
-shtt <- c(1)
-lookback_mean_sd_price <- c(10)
-factor_mean_sd_price <- c(1.5)
 
 for(time_of_day in timeofday)
 { 
@@ -92,23 +75,14 @@ for(time_of_day in timeofday)
   sht_tk<-matrix(0,dim(dt_time)[1]) # Initilising short ticks
   dt_chng_tick<-matrix(0,dim(dt_time)[1]) # Initilising short ticks
   
-  if(time_of_day==final.time)
-  { 
-    lexttk<-4  # No. of ticks after day end . exit cond for long is true ... then twap will be initiated
-    sexttk<-4  # This is no. of ticks before day end .. exit cond is true for short .. then twap will be initiated
-  }
-  if(time_of_day==final.time1)
-  {
-    lexttk<-16  # No. of ticks after day end . exit cond for long is true ... then twap will be initiated
-    sexttk<-4  # This is no. of ticks before day end .. exit cond is true for short .. then twap will be initiated
-    
-  }
+  
+  lexttk<-4  # No. of ticks before day end . exit cond for long is true ... then twap will be initiated
+#  sexttk<-4  # This is no. of ticks before day end .. exit cond is true for short .. then twap will be initiated
+  
+
   dt_mid_time<-matrix(0,dim(dt_time)[1])  # This will be 1 when the time is as above for e.g 12:00
-  dt_mid_time[dt_time==time_of_day]<-1
-  
-  dt_mid_tilltime<-matrix(0,dim(dt_time)[1]) 
-  dt_mid_tilltime[dt_time<=time_of_day]<-1
-  
+  dt_mid_time[dt_time>=time_of_day & dt_time<=final.time1]<-1
+
   for ( i in 20:(dim(dt_time)[1]-20) ){
     
     #lng_tk[i]<-lng_tk[i-1]
@@ -160,8 +134,8 @@ for(lonn in lon)
   #  NumericVector sht_tk , NumericVector dt_chng,int twapp, double tc)
   #rslta<-ctw2(as.numeric(dta_stk_close[,j]),as.numeric(dta_stk_high[,j]),as.numeric(dta_stk_low[,j]),as.numeric(lng_tk), as.numeric(sht_tk),as.numeric(dt_chng_tick),twapp,lexttk,sexttk,lon,sht,(0.0/100))
   rslta<-ctw2(as.numeric(dta_stk_close[,j]),as.numeric(dta_stk_high[,j]),as.numeric(dta_stk_low[,j]),
-              as.numeric(dt_mid_tilltime),as.numeric(lng_tk), as.numeric(sht_tk),as.numeric(dt_chng_tick),twapp,lexttk,
-              sexttk,lonn,shtt,(0.0/100),as.numeric(lookback_mean_sd_price),as.numeric(factor_mean_sd_price),as.numeric(Metals_Data_final$Close))
+              as.numeric(lng_tk), as.numeric(sht_tk),as.numeric(dt_chng_tick),twapp,lexttk,
+              sexttk,lonn,shtt,(0.0/100),as.numeric(lookback_mean_sd_price),as.numeric(factor_mean_sd_price))
   
   #rslta <- cbind(as.numeric(dta_stk_close[,j]),as.numeric(dta_stk_high[,j]),as.numeric(dta_stk_low[,j]),rslta)
   rslta<-data.frame(rslta)

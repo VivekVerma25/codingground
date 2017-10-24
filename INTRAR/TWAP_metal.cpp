@@ -87,6 +87,7 @@ double  minvalue(NumericVector S,  int startp, int endp){
   
   return mvalue;
 }
+// [[Rcpp::export]]
 
 double  meanvalue(NumericVector S){
   
@@ -100,8 +101,8 @@ double  meanvalue(NumericVector S){
   
   return meanp;
 }  
-
-double  sdvalue(NumericVector S, int meanp){
+// [[Rcpp::export]]
+double  sdvalue(NumericVector S, double meanp){
   
   double std = 0;
   double plb =S.size();
@@ -319,10 +320,10 @@ NumericVector ccretarrayabs(NumericVector p, NumericVector inc, int plb, int ptc
 // [[Rcpp::export]]
 
 
-NumericMatrix ctw2(NumericVector ltp,NumericVector ltph,NumericVector ltpl,NumericVector Timetillvolume,
+NumericMatrix ctw2(NumericVector ltp,NumericVector ltph,NumericVector ltpl,
                    NumericVector lng_tk , NumericVector sht_tk , 
                    NumericVector dt_chng,int twapp,int lexttk, int sexttk,int lon, int sht, double tc,
-                   int lookback_mean_sd_price, double factor_mean_sd_price,NumericVector Metals_Data){
+                   int lookback_mean_sd_price, double factor_mean_sd_price){
   
   // ltp means the tick close data
   //ltph means ticks high
@@ -464,7 +465,6 @@ NumericMatrix ctw2(NumericVector ltp,NumericVector ltph,NumericVector ltpl,Numer
       dtcnt=dtcnt+1;
       volume_day(dtcnt) = volsm; 
       dlypricechange(dtcnt) = price_change;
-      dlyyestcls(dtcnt)= yc_metals;
       volsm = 0;
       price_change = 0;
       trdstdy=0;
@@ -472,12 +472,11 @@ NumericMatrix ctw2(NumericVector ltp,NumericVector ltph,NumericVector ltpl,Numer
       yc=ltp(j-1);  // This is yesterdays close price 
       yl=tl;  // This is yesterdays low price
       yo = opn;
-      yc_metals = Metals_Data(j-1);
       opn=ltp(j);  // this is todays open price
       th=ltph(j);   // This is todays high price
       tl=ltpl(j);   // this is todays low price
    
-      ;// This will store daily close price
+      dlyyestcls(dtcnt)= yc;
       dlyyesthigh(dtcnt) = yh;
       dlyyestlow(dtcnt) = yl;
       
@@ -494,16 +493,17 @@ NumericMatrix ctw2(NumericVector ltp,NumericVector ltph,NumericVector ltpl,Numer
       lookback_sd_price(dtcnt) = sdvalue(subvector_sel_price,lookback_mean_price(dtcnt));
       
     }
-      if(Timetillvolume(j)==1)
-      {  
+
       price_change = (ltp(j)-opn)*100/opn;
-      }
+
       th=max(th,ltph(j));
       tl=min(tl,ltpl(j));
 
-    longentrycond = (yc_metals)>(lookback_mean_price(dtcnt)) && lng_tk(j)==1 && lon==1 && trdstdy<=1;
+    longentrycond = (ltp(j))>(lookback_mean_price(dtcnt)+ factor_mean_sd_price*lookback_sd_price(dtcnt)) && 
+      lng_tk(j)==1 && lon==1 && trdstdy<=1;
     
-    shortentrycond= (yc_metals)<(lookback_mean_price(dtcnt)) && sht_tk(j)==1 && sht==1 && trdstdy<=1;  
+    shortentrycond= (ltp(j))<(lookback_mean_price(dtcnt) - factor_mean_sd_price*lookback_sd_price(dtcnt))
+    && sht_tk(j)==1 && sht==1 && trdstdy<=1;  
     
     if ((longentrycond))
     { 
@@ -567,9 +567,11 @@ NumericMatrix ctw2(NumericVector ltp,NumericVector ltph,NumericVector ltpl,Numer
       
     }
 
-    longexitcond=((mp(j-1)==(1)) && dt_chng(j-lexttk)==1) ;
+    longexitcond=((mp(j-1)==(1)) && dt_chng(j+lexttk)==1) ;
+//    longexitcond=((mp(j-1)==(1)) && ltp(j)<=0.97*tslnum) ;
+    
     // shortexitcond=((mp(j-1)==(-1)) && dt_chng(j+sexttk)==1) ;
-    shortexitcond=((mp(j-1)==(-1)) && dt_chng(j-lexttk)==1) ;
+    shortexitcond=((mp(j-1)==(-1)) && dt_chng(j+lexttk)==1) ;
     
     if (longexitcond && !shortentrycond) mp(j)=0;  // This is only time based entry
     if (shortexitcond && !longentrycond) mp(j)=0;
@@ -598,7 +600,7 @@ NumericMatrix ctw2(NumericVector ltp,NumericVector ltph,NumericVector ltpl,Numer
     op(j,17)= volsm;
     op(j,18)=  dlypricechange(dtcnt);
     op(j,19) = price_change;
-    op(j,20) = Timetillvolume(j);
+    op(j,20) = shortentrycond;
     //Rcout << "res[j]=" <<res[j] << std::endl;
 }    
     return op;
