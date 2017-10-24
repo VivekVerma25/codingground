@@ -1,0 +1,36 @@
+from itertools import izip_longest
+import itertools
+import pandas
+import numpy as np
+import matplotlib
+
+all_trades = pandas.read_csv('C:/Users/SujitPK/Desktop/VPIN code/vpin-master/april_trades.csv', parse_dates=[0], index_col=0)
+usd_trades = all_trades[all_trades['d.currency'] == 'USD']
+
+volume = (usd_trades['d.amount_int'])
+trades = (usd_trades['d.price_int'])
+
+
+def cleanup(x):
+    if isinstance(x, str) and 'e-' in x:
+        return 0
+    else:
+        return float(x)
+
+
+volume = volume.apply(lambda x: cleanup(x))
+volume = volume.astype(float)
+
+#####
+typestr = (usd_trades['d.type_str'])
+# typestr[typestr == 'bid'] = 0
+# typestr[typestr == 'ask'] = 1
+
+trades_1min = trades.resample('1min').diff(1).dropna()
+volume_1min = volume.resample('1min', how='sum')
+
+# assign trade sign to 1 minute time bar by averaging buys and sells and taking the more common one
+typestr_1min = typestr.astype(float).resample('1min', how='mean').round()
+
+df = pandas.DataFrame({'type': typestr_1min, 'volume': volume_1min})
+df_trades = pandas.DataFrame({'volume': volume_1min, 'trades': trades_1min})
